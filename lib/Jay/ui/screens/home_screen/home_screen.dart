@@ -68,12 +68,14 @@ class HomePage extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       // Cards Section
-                      Text(
-                        'Our Service',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                      Center(
+                        child: Text(
+                          'Our Service',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       SizedBox(height: 10),
@@ -83,15 +85,15 @@ class HomePage extends StatelessWidget {
                         alignment: WrapAlignment.center,
                         children: [
                           _buildServiceCard(
-                            'Looking for a RoomMate',
+                            //'Looking for a RoomMate',
                             'assets/images/look_roommate.png',
                           ),
                           _buildServiceCard(
-                            'Looking for a Room',
+                            //'Looking for a Room',
                             'assets/images/look_room.png',
                           ),
                           _buildServiceCard(
-                            'Want to list my Room',
+                           // 'Want to list my Room',
                             'assets/images/list_room.png',
                           ),
                         ],
@@ -137,7 +139,7 @@ class HomePage extends StatelessWidget {
     return Container(
       width: 150,
       padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
+      /*decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.9),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -147,7 +149,7 @@ class HomePage extends StatelessWidget {
             blurRadius: 5,
           ),
         ],
-      ),
+      ),*/
       child: Column(
         children: [
           Image.asset(

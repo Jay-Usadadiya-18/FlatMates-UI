@@ -8,7 +8,6 @@ import 'package:flatmates/Jay/widgets/custom_button/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-
 class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -89,8 +88,6 @@ class WelcomeScreen extends StatelessWidget {
                     // Button Section
                     Center(
                       child: CustomButton(
-                        //text: 'Login/Sign Up',
-                       // text: 'Login/Sign Up',
                         text: 'Login/Sign Up',
                         onPressed: () {
                           Get.toNamed(AppRoutes.register); // Use GetX for navigation

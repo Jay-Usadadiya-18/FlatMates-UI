@@ -6,7 +6,12 @@ import 'package:flatmates/Jay/res/colors/colors.dart';
 import 'package:flatmates/Jay/res/font/text_style.dart';
 import 'package:flatmates/Jay/widgets/custom_button/custom_button.dart';
 
-class PreferenceScreen extends StatelessWidget {
+class PreferenceScreen extends StatefulWidget {
+  @override
+  _PreferenceScreenState createState() => _PreferenceScreenState();
+}
+
+class _PreferenceScreenState extends State<PreferenceScreen> {
   final List<PreferenceItem> preferenceItems = [
     PreferenceItem(name: 'Pet Lover', iconPath: AppIcons.pet),
     PreferenceItem(name: 'Gym Person', iconPath: AppIcons.gym),
@@ -24,6 +29,9 @@ class PreferenceScreen extends StatelessWidget {
     PreferenceItem(name: 'Non-Smoker', iconPath: AppIcons.nonSmoker),
   ];
 
+  List<String> selectedPreferences = [];
+  String? errorMessage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,49 +39,67 @@ class PreferenceScreen extends StatelessWidget {
         title: Text('Choose your preferences'),
         backgroundColor: AppColors.primaryColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Choose at least 5 preferences for better results',
-              style: AppTextStyles.bodyStyle(context).copyWith(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: ListView(
-                children: [
-                  GridView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: _getCrossAxisCount(context),
-                      mainAxisSpacing: _getSpacing(context),
-                      crossAxisSpacing: _getSpacing(context),
-                      childAspectRatio: 1,
-                    ),
-                    itemCount: preferenceItems.length,
-                    itemBuilder: (context, index) {
-                      return _buildPreferenceItem(context, preferenceItems[index]);
-                    },
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (errorMessage != null) ...[
+                Center(
+                  child: Text(
+                    errorMessage!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.red, fontSize: 14),
                   ),
-                  const SizedBox(height: 20),
-                ],
+                ),
+                const SizedBox(height: 10),
+              ],
+              Center(
+                child: Text(
+                  'Choose at least 5 preferences for better results',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyStyle(context).copyWith(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                ),
               ),
-            ),
-            Center(
-              child: CustomButton(
-                text: 'Next',
-                onPressed: () {
-                  Get.toNamed(AppRoutes.bottomNavBar);
+              const SizedBox(height: 20),
+              GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: _getCrossAxisCount(context),
+                  mainAxisSpacing: _getSpacing(context),
+                  crossAxisSpacing: _getSpacing(context),
+                  childAspectRatio: 1,
+                ),
+                itemCount: preferenceItems.length,
+                itemBuilder: (context, index) {
+                  return _buildPreferenceItem(context, preferenceItems[index]);
                 },
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Center(
+                child: CustomButton(
+                  text: 'Next',
+                  onPressed: () {
+                    if (selectedPreferences.length >= 5) {
+                      setState(() {
+                        errorMessage = null;
+                      });
+                      Get.toNamed(AppRoutes.bottomNavBar);
+                    } else {
+                      setState(() {
+                        errorMessage = 'Please select at least 5 preferences.';
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -107,9 +133,17 @@ class PreferenceScreen extends StatelessWidget {
     double iconSize = MediaQuery.of(context).size.width > 800 ? 50 : 60; // Smaller icon for web
     double padding = MediaQuery.of(context).size.width > 800 ? 4.0 : 8.0;
 
+    bool isSelected = selectedPreferences.contains(item.name);
+
     return GestureDetector(
       onTap: () {
-        // Add your onClick functionality here
+        setState(() {
+          if (isSelected) {
+            selectedPreferences.remove(item.name);
+          } else {
+            selectedPreferences.add(item.name);
+          }
+        });
       },
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -118,76 +152,27 @@ class PreferenceScreen extends StatelessWidget {
           padding: EdgeInsets.all(padding),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.transparent, width: 2),
-          ),
-          child: HoverButton(
-            item: item,
-            iconSize: iconSize,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HoverButton extends StatefulWidget {
-  final PreferenceItem item;
-  final double iconSize;
-
-  const HoverButton({Key? key, required this.item, required this.iconSize})
-      : super(key: key);
-
-  @override
-  _HoverButtonState createState() => _HoverButtonState();
-}
-
-class _HoverButtonState extends State<HoverButton> {
-  bool _isHovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        // Click functionality here
-      },
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) {
-          setState(() {
-            _isHovering = true;
-          });
-        },
-        onExit: (_) {
-          setState(() {
-            _isHovering = false;
-          });
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
             border: Border.all(
-              color: _isHovering ? AppColors.primaryColor : Colors.transparent,
+              color: isSelected ? AppColors.primaryColor : Colors.transparent,
               width: 2,
             ),
-            borderRadius: BorderRadius.circular(10),
           ),
-          padding: const EdgeInsets.all(10),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
-                  widget.item.iconPath,
+                  item.iconPath,
                   fit: BoxFit.cover,
-                  height: widget.iconSize,
-                  width: widget.iconSize,
+                  height: iconSize,
+                  width: iconSize,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                widget.item.name,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                item.name,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
             ],
