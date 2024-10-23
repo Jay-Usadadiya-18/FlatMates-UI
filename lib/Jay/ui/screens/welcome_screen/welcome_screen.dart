@@ -89,6 +89,7 @@ class WelcomeScreen extends StatelessWidget {
                     // Button Section
                     Center(
                       child: CustomButton(
+                        //text: 'Login/Sign Up',
                         text: 'Login/Sign Up',
                         onPressed: () {
                           Get.toNamed(AppRoutes.register); // Use GetX for navigation
